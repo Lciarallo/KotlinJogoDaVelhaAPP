@@ -6,7 +6,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -21,6 +20,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,7 +35,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.jogodavelha.ui.theme.JogoDaVelhaTheme
-import android.util.Log
 import androidx.compose.ui.text.font.FontWeight
 
 class MainActivity : ComponentActivity() {
@@ -55,31 +54,23 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
 @SuppressLint("RememberReturnType")
 @Composable
 fun MainScreen(modifier: Modifier = Modifier) {
     var wins by remember {
-        mutableStateOf(0)
+        mutableIntStateOf(0)
     }
     var draws by remember {
-        mutableStateOf(0)
+        mutableIntStateOf(0)
     }
     var losses by remember {
-        mutableStateOf(0)
+        mutableIntStateOf(0)
     }
     var playerOption by remember {
         mutableStateOf("")
     }
     var player by remember {
-        mutableStateOf(0)
+        mutableIntStateOf(0)
     }
     var optionInvalCount by remember {
         mutableStateOf(false)
@@ -93,7 +84,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
         )
     }
     val optionInvalCountAlter: () -> Unit = {
-        optionInvalCount = if (optionInvalCount == true) false else true
+        optionInvalCount = optionInvalCount != true
     }
 
     val clickPlayer: () -> String = {
@@ -120,11 +111,8 @@ fun MainScreen(modifier: Modifier = Modifier) {
             }
         }
         // Verificar diagonais
-        if ((tabuleiro[0][0] == playerOption && tabuleiro[1][1] == playerOption && tabuleiro[2][2] == playerOption) ||
-            (tabuleiro[0][2] == playerOption && tabuleiro[1][1] == playerOption && tabuleiro[2][0] == playerOption)) {
-            return true
-        }
-        return false
+        return (tabuleiro[0][0] == playerOption && tabuleiro[1][1] == playerOption && tabuleiro[2][2] == playerOption) ||
+                (tabuleiro[0][2] == playerOption && tabuleiro[1][1] == playerOption && tabuleiro[2][0] == playerOption)
     }
     fun checkDraw(tabuleiro: List<List<String>>): Boolean {
         for (row in tabuleiro) {
@@ -179,11 +167,11 @@ fun MainScreen(modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.Top
     ) {
         ScoreBoard(wins= wins, draws= draws, losses= losses)
-        tabuleiroVelha(tabuleiro = tabuleiro, playerOption = playerOption, optionInvalCountAlter = optionInvalCountAlter, clickPlayer = clickPlayer)
+        TabuleiroVelha(tabuleiro = tabuleiro, optionInvalCountAlter = optionInvalCountAlter, clickPlayer = clickPlayer)
         if (optionInvalCount) {
-            optionInval(player)
+            OptionInval(player)
         }
-        playBoard(player)
+        PlayBoard(player)
     }
 
 }
@@ -191,13 +179,13 @@ fun MainScreen(modifier: Modifier = Modifier) {
 @Composable
 fun ScoreBoard(wins: Int, draws: Int, losses: Int) {
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-        Text(text = "Player 1:  ${wins}", color = Color.Blue, fontSize = 23.sp)
-        Text(text = "Draws: ${draws}", color = Color.White, fontSize = 23.sp)
-        Text(text = "Player 2:  ${losses}", color = Color.Red, fontSize = 23.sp)
+        Text(text = "Player 1:  $wins", color = Color.Blue, fontSize = 23.sp)
+        Text(text = "Draws: $draws", color = Color.White, fontSize = 23.sp)
+        Text(text = "Player 2:  $losses", color = Color.Red, fontSize = 23.sp)
     }
 }
 @Composable
-fun playBoard(player:Int) {
+fun PlayBoard(player:Int) {
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
         Text(text = "Jogada do jogador:  ${player+1} ",
             color = if (player == 0) Color.Blue else if (player == 1) Color.Red else Color.White,
@@ -207,7 +195,7 @@ fun playBoard(player:Int) {
 }
 
 @Composable
-fun optionInval(player:Int) {
+fun OptionInval(player:Int) {
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
         Text(text = "Jogada invalida! Por favor escolha novamente.",
             color = if (player == 0) Color.Blue else if (player == 1) Color.Red else Color.White,
@@ -217,9 +205,8 @@ fun optionInval(player:Int) {
 }
 
 @Composable
-fun tabuleiroVelha(
+fun TabuleiroVelha(
     tabuleiro: List<MutableList<String>>,
-    playerOption: String,
     optionInvalCountAlter:  () -> Unit,
     clickPlayer: () -> String,
 ) {
