@@ -69,6 +69,26 @@ val player2 = Player(0)
 @SuppressLint("RememberReturnType")
 @Composable
 fun MainScreen(modifier: Modifier = Modifier) {
+    fun checkWin(tabuleiro: List<List<String>>, playerOption: String): Boolean {
+        // Verificar linhas
+        for (row in tabuleiro) {
+            if (row.all { it == playerOption }) {
+                return true
+            }
+        }
+        // Verificar colunas
+        for (i in tabuleiro.indices) {
+            if (tabuleiro.all { it[i] == playerOption }) {
+                return true
+            }
+        }
+        // Verificar diagonais
+        if ((tabuleiro[0][0] == playerOption && tabuleiro[1][1] == playerOption && tabuleiro[2][2] == playerOption) ||
+            (tabuleiro[0][2] == playerOption && tabuleiro[1][1] == playerOption && tabuleiro[2][0] == playerOption)) {
+            return true
+        }
+        return false
+    }
     var playerOption by remember {
         mutableStateOf("")
     }
@@ -99,6 +119,14 @@ fun MainScreen(modifier: Modifier = Modifier) {
         optionInvalCount = if (optionInvalCount == true) false else true
     }
 
+    // Verificar se o jogador atual venceu após a jogada
+    if (checkWin(tabuleiro, playerOption)) {
+        if (playerOption == "X") {
+            Log.d("winPlay", "Player 01 ganhou!!!")
+        } else {
+            Log.d("winPlay", "Player 02 ganhou!!!")
+        }
+    }
     Box(modifier = modifier.fillMaxSize()) {
         Image(
             painter = painterResource(
@@ -122,6 +150,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
         }
         playBoard(player)
     }
+
 }
 
 @Composable
