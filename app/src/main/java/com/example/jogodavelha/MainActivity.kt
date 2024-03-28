@@ -75,21 +75,28 @@ fun MainScreen(modifier: Modifier = Modifier) {
     var player by remember {
         mutableStateOf(0)
     }
+    var optionInvalCount by remember {
+        mutableStateOf(false)
+    }
 
     val tabuleiro = remember {
         mutableStateListOf(
             mutableListOf("", "", ""),
             mutableListOf("", "", ""),
             mutableListOf("", "", "")
-    )}
+        )}
 
     val clickPlayer: () -> String = {
+        optionInvalCount=false
         // Alternar jogada
         playerOption = if (player == 0) "X" else "O"
         // Alternar jogador
         player = if (player == 0) 1 else 0
         // Retornar o novo valor de playerOption
         playerOption
+    }
+    val optionInvalCountAlter: () -> Unit = {
+        optionInvalCount = if (optionInvalCount == true) false else true
     }
 
     Box(modifier = modifier.fillMaxSize()) {
@@ -109,10 +116,12 @@ fun MainScreen(modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.Top
     ) {
         ScoreBoard(player1, 0, player2, 23)
-        tabuleiroVelha(tabuleiro = tabuleiro,playerOption=playerOption,clickPlayer = clickPlayer)
+        tabuleiroVelha(tabuleiro = tabuleiro, playerOption = playerOption, optionInvalCountAlter = optionInvalCountAlter, clickPlayer = clickPlayer)
+        if (optionInvalCount) {
+            optionInval(player)
+        }
         playBoard(player)
     }
-
 }
 
 @Composable
@@ -132,10 +141,22 @@ fun playBoard(player:Int) {
             fontWeight = FontWeight.Bold)
     }
 }
+
+@Composable
+fun optionInval(player:Int) {
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+        Text(text = "Jogada invalida! Por favor escolha novamente.",
+            color = if (player == 0) Color.Blue else if (player == 1) Color.Red else Color.White,
+            fontSize = 23.sp,
+            fontWeight = FontWeight.Bold)
+    }
+}
+
 @Composable
 fun tabuleiroVelha(
     tabuleiro: List<MutableList<String>>,
     playerOption: String,
+    optionInvalCountAlter:  () -> Unit,
     clickPlayer: () -> String,
 ) {
     Column(modifier = Modifier.padding(0.dp, 16.dp)) {
@@ -157,7 +178,12 @@ fun tabuleiroVelha(
                                 )
                             )
                             .clickable {
-                                tabuleiro[i][j] = clickPlayer() },
+                                if (tabuleiro[i][j] == "") {
+                                    tabuleiro[i][j] = clickPlayer()
+                                } else {
+                                    optionInvalCountAlter()
+                                }
+                            },
                     ) {
                         Text(
                             text = tabuleiro[i][j],
