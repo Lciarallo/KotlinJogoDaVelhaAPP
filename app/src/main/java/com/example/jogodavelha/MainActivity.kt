@@ -152,7 +152,7 @@ fun tabuleiroVelha(
                         Text(
                             text = tabuleiro[i][j],
                             fontSize = 90.sp,
-                            color = Color.White,
+                            color = if (tabuleiro[i][j] == "X") Color.Green else if (tabuleiro[i][j] == "O") Color.Yellow else Color.White,
                             textAlign = TextAlign.Center,
                             modifier = Modifier.fillMaxWidth(),
                         )
