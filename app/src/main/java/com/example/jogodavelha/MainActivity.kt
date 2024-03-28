@@ -63,12 +63,49 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
     )
 }
 
-val player1 = Player(0)
-val player2 = Player(0)
-
 @SuppressLint("RememberReturnType")
 @Composable
 fun MainScreen(modifier: Modifier = Modifier) {
+    var wins by remember {
+        mutableStateOf(0)
+    }
+    var draws by remember {
+        mutableStateOf(0)
+    }
+    var losses by remember {
+        mutableStateOf(0)
+    }
+    var playerOption by remember {
+        mutableStateOf("")
+    }
+    var player by remember {
+        mutableStateOf(0)
+    }
+    var optionInvalCount by remember {
+        mutableStateOf(false)
+    }
+
+    val tabuleiro = remember {
+        mutableStateListOf(
+            mutableListOf("", "", ""),
+            mutableListOf("", "", ""),
+            mutableListOf("", "", "")
+        )
+    }
+    val optionInvalCountAlter: () -> Unit = {
+        optionInvalCount = if (optionInvalCount == true) false else true
+    }
+
+    val clickPlayer: () -> String = {
+        optionInvalCount=false
+        // Alternar jogada
+        playerOption = if (player == 0) "X" else "O"
+        // Alternar jogador
+        player = if (player == 0) 1 else 0
+        // Retornar o novo valor de playerOption
+        playerOption
+    }
+
     fun checkWin(tabuleiro: List<List<String>>, playerOption: String): Boolean {
         // Verificar linhas
         for (row in tabuleiro) {
@@ -89,43 +126,41 @@ fun MainScreen(modifier: Modifier = Modifier) {
         }
         return false
     }
-    var playerOption by remember {
-        mutableStateOf("")
+    fun checkDraw(tabuleiro: List<List<String>>): Boolean {
+        for (row in tabuleiro) {
+            for (element in row) {
+                if (element.isEmpty()) {
+                    // Ainda há espaços vazios, então o jogo não é um empate
+                    return false
+                }
+            }
+        }
+        // Se não houver espaços vazios e ninguém ganhou, é um empate
+        return true
     }
-    var player by remember {
-        mutableStateOf(0)
-    }
-    var optionInvalCount by remember {
-        mutableStateOf(false)
-    }
-
-    val tabuleiro = remember {
-        mutableStateListOf(
-            mutableListOf("", "", ""),
-            mutableListOf("", "", ""),
-            mutableListOf("", "", "")
-        )}
-
-    val clickPlayer: () -> String = {
-        optionInvalCount=false
-        // Alternar jogada
-        playerOption = if (player == 0) "X" else "O"
-        // Alternar jogador
-        player = if (player == 0) 1 else 0
-        // Retornar o novo valor de playerOption
-        playerOption
-    }
-    val optionInvalCountAlter: () -> Unit = {
-        optionInvalCount = if (optionInvalCount == true) false else true
+    fun resetBoard(tabuleiro: MutableList<MutableList<String>>) {
+        for (row in tabuleiro) {
+            for (index in row.indices) {
+                row[index] = "" // Define a posição como vazia
+            }
+        }
+        playerOption = ""
+        player = 0
+        optionInvalCount = false
     }
 
     // Verificar se o jogador atual venceu após a jogada
     if (checkWin(tabuleiro, playerOption)) {
         if (playerOption == "X") {
-            Log.d("winPlay", "Player 01 ganhou!!!")
-        } else {
-            Log.d("winPlay", "Player 02 ganhou!!!")
+            wins++
+            resetBoard(tabuleiro)
+        } else if (playerOption == "O") {
+            losses++
+            resetBoard(tabuleiro)
         }
+    } else if(checkDraw(tabuleiro)) {
+            draws++
+            resetBoard(tabuleiro)
     }
     Box(modifier = modifier.fillMaxSize()) {
         Image(
@@ -143,7 +178,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
-        ScoreBoard(player1, 0, player2, 23)
+        ScoreBoard(wins= wins, draws= draws, losses= losses)
         tabuleiroVelha(tabuleiro = tabuleiro, playerOption = playerOption, optionInvalCountAlter = optionInvalCountAlter, clickPlayer = clickPlayer)
         if (optionInvalCount) {
             optionInval(player)
@@ -154,11 +189,11 @@ fun MainScreen(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun ScoreBoard(Player1: Player, draws: Int, Player2: Player, fontsize: Int) {
+fun ScoreBoard(wins: Int, draws: Int, losses: Int) {
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-        Text(text = "Player 1:  ${Player1.vitorias} ", color = Color.Blue, fontSize = fontsize.sp)
-        Text(text = "Draws: $draws", color = Color.White, fontSize = fontsize.sp)
-        Text(text = "Player 2:  ${Player2.vitorias}", color = Color.Red, fontSize = fontsize.sp)
+        Text(text = "Player 1:  ${wins}", color = Color.Blue, fontSize = 23.sp)
+        Text(text = "Draws: ${draws}", color = Color.White, fontSize = 23.sp)
+        Text(text = "Player 2:  ${losses}", color = Color.Red, fontSize = 23.sp)
     }
 }
 @Composable
