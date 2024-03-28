@@ -1,5 +1,6 @@
 package com.example.jogodavelha
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -19,6 +20,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,6 +35,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.jogodavelha.ui.theme.JogoDaVelhaTheme
+import android.util.Log
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,8 +65,32 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 val player1 = Player(0)
 val player2 = Player(0)
 
+@SuppressLint("RememberReturnType")
 @Composable
 fun MainScreen(modifier: Modifier = Modifier) {
+    var playerOption by remember {
+        mutableStateOf("")
+    }
+    var player by remember {
+        mutableStateOf(0)
+    }
+
+    val tabuleiro = remember {
+        mutableStateListOf(
+            mutableListOf("", "", ""),
+            mutableListOf("", "", ""),
+            mutableListOf("", "", "")
+    )}
+
+    val clickPlayer: () -> String = {
+        // Alternar jogada
+        playerOption = if (player == 0) "X" else "O"
+        // Alternar jogador
+        player = if (player == 0) 1 else 0
+        // Retornar o novo valor de playerOption
+        playerOption
+    }
+
     Box(modifier = modifier.fillMaxSize()) {
         Image(
             painter = painterResource(
@@ -70,15 +101,15 @@ fun MainScreen(modifier: Modifier = Modifier) {
         )
     }
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
         ScoreBoard(player1, 0, player2, 23)
-        tabuleiroVelha()
+        tabuleiroVelha(tabuleiro = tabuleiro,playerOption=playerOption,clickPlayer = clickPlayer)
     }
-
 
 }
 
@@ -92,7 +123,11 @@ fun ScoreBoard(Player1: Player, draws: Int, Player2: Player, fontsize: Int) {
 }
 
 @Composable
-fun tabuleiroVelha() {
+fun tabuleiroVelha(
+    tabuleiro: List<MutableList<String>>,
+    playerOption: String,
+    clickPlayer: () -> String,
+) {
     Column(modifier = Modifier.padding(0.dp, 16.dp)) {
         for (i in 0 until 3) {
             Row(modifier = Modifier) {
@@ -105,13 +140,17 @@ fun tabuleiroVelha() {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth(maxWidth)
-                            .border(border = BorderStroke(
-                                color = Color.Red,
-                                width = 5.dp))
-                            .clickable {  },
+                            .border(
+                                border = BorderStroke(
+                                    color = Color.Red,
+                                    width = 5.dp
+                                )
+                            )
+                            .clickable {
+                                tabuleiro[i][j] = clickPlayer() },
                     ) {
                         Text(
-                            text = "",
+                            text = tabuleiro[i][j],
                             fontSize = 90.sp,
                             color = Color.White,
                             textAlign = TextAlign.Center,
@@ -123,7 +162,6 @@ fun tabuleiroVelha() {
         }
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable
