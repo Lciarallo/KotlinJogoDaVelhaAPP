@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.jogodavelha.ui.theme.JogoDaVelhaTheme
 import android.util.Log
+import androidx.compose.ui.text.font.FontWeight
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -109,6 +110,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
     ) {
         ScoreBoard(player1, 0, player2, 23)
         tabuleiroVelha(tabuleiro = tabuleiro,playerOption=playerOption,clickPlayer = clickPlayer)
+        playBoard(player)
     }
 
 }
@@ -121,7 +123,15 @@ fun ScoreBoard(Player1: Player, draws: Int, Player2: Player, fontsize: Int) {
         Text(text = "Player 2:  ${Player2.vitorias}", color = Color.Red, fontSize = fontsize.sp)
     }
 }
-
+@Composable
+fun playBoard(player:Int) {
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+        Text(text = "Jogada do jogador:  ${player+1} ",
+            color = if (player == 0) Color.Blue else if (player == 1) Color.Red else Color.White,
+            fontSize = 23.sp,
+            fontWeight = FontWeight.Bold)
+    }
+}
 @Composable
 fun tabuleiroVelha(
     tabuleiro: List<MutableList<String>>,
@@ -142,7 +152,7 @@ fun tabuleiroVelha(
                             .fillMaxWidth(maxWidth)
                             .border(
                                 border = BorderStroke(
-                                    color = Color.Red,
+                                    color = Color.White,
                                     width = 5.dp
                                 )
                             )
@@ -152,7 +162,7 @@ fun tabuleiroVelha(
                         Text(
                             text = tabuleiro[i][j],
                             fontSize = 90.sp,
-                            color = if (tabuleiro[i][j] == "X") Color.Green else if (tabuleiro[i][j] == "O") Color.Yellow else Color.White,
+                            color = if (tabuleiro[i][j] == "X") Color.Blue else if (tabuleiro[i][j] == "O") Color.Red else Color.White,
                             textAlign = TextAlign.Center,
                             modifier = Modifier.fillMaxWidth(),
                         )
