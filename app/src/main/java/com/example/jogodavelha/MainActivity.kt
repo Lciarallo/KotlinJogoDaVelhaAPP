@@ -153,7 +153,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
     Box(modifier = modifier.fillMaxSize()) {
         Image(
             painter = painterResource(
-                id = R.drawable.seamless_wood_background_2
+                id = R.drawable.newback
             ), contentDescription = null,
             modifier = modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
@@ -164,7 +164,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
             .fillMaxSize()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top
+        verticalArrangement = Arrangement.SpaceBetween
     ) {
         ScoreBoard(wins= wins, draws= draws, losses= losses)
         TabuleiroVelha(tabuleiro = tabuleiro, optionInvalCountAlter = optionInvalCountAlter, clickPlayer = clickPlayer)
@@ -179,9 +179,12 @@ fun MainScreen(modifier: Modifier = Modifier) {
 @Composable
 fun ScoreBoard(wins: Int, draws: Int, losses: Int) {
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-        Text(text = "Player 1:  $wins", color = Color.Blue, fontSize = 23.sp,fontWeight = FontWeight.Bold)
-        Text(text = "Draws: $draws", color = Color.White, fontSize = 23.sp,fontWeight = FontWeight.Bold)
-        Text(text = "Player 2:  $losses", color = Color.Red, fontSize = 23.sp,fontWeight = FontWeight.Bold)
+        Text(text = "Player 1:", color = Color.Blue, fontSize = 23.sp,fontWeight = FontWeight.Bold)
+        Text(text = "$wins", color = Color(0xFF949494), fontSize = 23.sp,fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
+        Text(text = "Draws:", color = Color.White, fontSize = 23.sp,fontWeight = FontWeight.Bold)
+        Text(text = "$draws", color = Color(0xFF949494), fontSize = 23.sp,fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
+        Text(text = "Player 2:", color = Color.Red, fontSize = 23.sp,fontWeight = FontWeight.Bold)
+        Text(text = "$losses", color = Color(0xFF949494), fontSize = 23.sp,fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
     }
 }
 @Composable
