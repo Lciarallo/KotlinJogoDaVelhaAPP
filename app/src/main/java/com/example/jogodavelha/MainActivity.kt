@@ -153,7 +153,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
     Box(modifier = modifier.fillMaxSize()) {
         Image(
             painter = painterResource(
-                id = R.drawable.pexels_pixabay_326333
+                id = R.drawable.seamless_wood_background_2
             ), contentDescription = null,
             modifier = modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
@@ -179,9 +179,9 @@ fun MainScreen(modifier: Modifier = Modifier) {
 @Composable
 fun ScoreBoard(wins: Int, draws: Int, losses: Int) {
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-        Text(text = "Player 1:  $wins", color = Color.Blue, fontSize = 23.sp)
-        Text(text = "Draws: $draws", color = Color.White, fontSize = 23.sp)
-        Text(text = "Player 2:  $losses", color = Color.Red, fontSize = 23.sp)
+        Text(text = "Player 1:  $wins", color = Color.Blue, fontSize = 23.sp,fontWeight = FontWeight.Bold)
+        Text(text = "Draws: $draws", color = Color.White, fontSize = 23.sp,fontWeight = FontWeight.Bold)
+        Text(text = "Player 2:  $losses", color = Color.Red, fontSize = 23.sp,fontWeight = FontWeight.Bold)
     }
 }
 @Composable
